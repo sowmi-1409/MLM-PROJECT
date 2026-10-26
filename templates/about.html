@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}NewsGuard — About Project & Academic Architecture{% endblock %}
+{% block page_title %}About Project & Research Methodology{% endblock %}
+
+{% block content %}
+<div class="about-container">
+  <!-- Project Title Banner -->
+  <div class="card about-header-card mb-4">
+    <div class="card-body">
+      <div class="badge badge-primary mb-2">College Machine Learning Laboratory (MLM) Capstone</div>
+      <h1 class="about-title">NewsGuard: Explainable Fake News, Clickbait & Headline–Body Mismatch Detection</h1>
+      <p class="about-subtext text-muted">
+        A multi-faceted forensic Natural Language Processing architecture designed to combat online information disorders
+        through verifiable machine learning models and transparent algorithmic explainability.
+      </p>
+    </div>
+  </div>
+
+  <!-- Problem Statement & Objectives -->
+  <div class="grid-2col mb-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+          <span>1. Problem Statement</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="text-sm">
+          Digital journalism and social feeds have been inundated by three distinct but overlapping information pathologies:
+        </p>
+        <ul class="styled-list text-sm">
+          <li>
+            <strong>Fabricated Disinformation (Fake News):</strong> Deliberately false articles mimicking real journalism to deceive readers or manipulate democratic processes.
+          </li>
+          <li>
+            <strong>Clickbait Deception:</strong> Sensational, hyperbolic, or suspense-driven headlines crafted to monetize clicks, degrading public trust in media.
+          </li>
+          <li>
+            <strong>Headline–Body Mismatch (Bait-and-Switch):</strong> Sensational headlines paired with ordinary or unrelated articles, misleading readers who only skim titles.
+          </li>
+        </ul>
+        <p class="text-sm mt-3">
+          Existing systems treat "fake news" as a monolithic black-box label without explaining why an article was flagged or distinguishing sensational framing from factual fraud.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-bullseye text-primary"></i>
+          <span>2. Project Objectives</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list text-sm">
+          <li>
+            <strong>Disentangled Multi-Task Analysis:</strong> Decouple fake news classification from clickbait detection and semantic alignment rather than conflating them into a single score.
+          </li>
+          <li>
+            <strong>Transparent Explainability:</strong> Expose local feature attributions, influential vocabulary weights, and specific rhetorical tropes behind every prediction.
+          </li>
+          <li>
+            <strong>Calibrated Lexical Consistency:</strong> Establish an empirically validated decision threshold for headline–body similarity using TF-IDF cosine similarity.
+          </li>
+          <li>
+            <strong>Verifiable External Grounding:</strong> Integrate real-time encyclopedic reference retrieval to contextualize named entities and core claims.
+          </li>
+          <li>
+            <strong>Academic Integrity:</strong> Train models strictly on published benchmark datasets with held-out test evaluations and transparent scientific boundaries.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proposed Methodology & Architecture -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-sitemap text-info"></i>
+        <span>3. Proposed Methodology & Forensic Pipeline Architecture</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="text-sm text-muted mb-4">
+        NewsGuard processes an article through a multi-stage pipeline where text is cleaned, tokenized, vectorized, and passed through three independent machine learning modules alongside an external retrieval check.
+      </p>
+
+      <!-- Architecture Pipeline Diagram -->
+      <div class="pipeline-flow-diagram">
+        <div class="flow-step">
+          <div class="flow-box flow-input">
+            <i class="fa-solid fa-file-import"></i>
+            <strong>User Input / URL</strong>
+            <small>Headline &amp; Body</small>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-box flow-prep">
+            <i class="fa-solid fa-filter"></i>
+            <strong>Preprocessing</strong>
+            <small>HTML clean, N-grams</small>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-box-group">
+            <div class="flow-box flow-module">
+              <i class="fa-solid fa-shield"></i>
+              <strong>Fake News Model</strong>
+              <small>Linear SGD (SVM)</small>
+            </div>
+            <div class="flow-box flow-module">
+              <i class="fa-solid fa-bullhorn"></i>
+              <strong>Clickbait Model</strong>
+              <small>Multinomial NB</small>
+            </div>
+            <div class="flow-box flow-module">
+              <i class="fa-solid fa-arrows-split-up-and-left"></i>
+              <strong>Mismatch Detector</strong>
+              <small>TF-IDF &tau;=0.100</small>
+            </div>
+            <div class="flow-box flow-module">
+              <i class="fa-solid fa-globe"></i>
+              <strong>External Verifier</strong>
+              <small>Wikipedia Entity API</small>
+            </div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-box flow-output">
+            <i class="fa-solid fa-chart-pie"></i>
+            <strong>Explainable Synthesis</strong>
+            <small>Local attribution &amp; warnings</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack & Datasets Row -->
+  <div class="grid-2col mb-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-microchip text-warning"></i>
+          <span>4. Technologies Used</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="tech-stack-grid">
+          <div class="tech-item">
+            <i class="fa-brands fa-python tech-icon"></i>
+            <div>
+              <strong>Python 3.10</strong>
+              <small class="text-muted d-block">Core ML &amp; Backend Runtime</small>
+            </div>
+          </div>
+          <div class="tech-item">
+            <i class="fa-solid fa-gears tech-icon"></i>
+            <div>
+              <strong>Scikit-Learn 1.7</strong>
+              <small class="text-muted d-block">TF-IDF, SVM, MNB, Pipeline</small>
+            </div>
+          </div>
+          <div class="tech-item">
+            <i class="fa-solid fa-server tech-icon"></i>
+            <div>
+              <strong>Flask 3.1</strong>
+              <small class="text-muted d-block">REST API &amp; Server-Side Templates</small>
+            </div>
+          </div>
+          <div class="tech-item">
+            <i class="fa-solid fa-chart-simple tech-icon"></i>
+            <div>
+              <strong>Chart.js 4.4</strong>
+              <small class="text-muted d-block">Responsive Interactive Visualizations</small>
+            </div>
+          </div>
+          <div class="tech-item">
+            <i class="fa-solid fa-spider tech-icon"></i>
+            <div>
+              <strong>BeautifulSoup 4</strong>
+              <small class="text-muted d-block">Automated Web Parsing &amp; Scraping</small>
+            </div>
+          </div>
+          <div class="tech-item">
+            <i class="fa-brands fa-html5 tech-icon"></i>
+            <div>
+              <strong>HTML5 &amp; CSS3</strong>
+              <small class="text-muted d-block">Custom Editorial Design System</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-database text-success"></i>
+          <span>5. Benchmark Datasets &amp; Origins</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="dataset-info-block mb-3">
+          <strong class="d-block text-primary">Fake or Real News Dataset</strong>
+          <small class="text-muted d-block">
+            George McIntire &amp; Lutz Hamel (Univ. of Rhode Island). 6,295 verified articles with balanced real journalism (Reuters, NYT) vs disinformation.
+          </small>
+        </div>
+        <div class="dataset-info-block mb-3">
+          <strong class="d-block text-primary">Stop Clickbait Dataset</strong>
+          <small class="text-muted d-block">
+            Chakraborty et al. (ASONAM 2016). 32,000 headlines (16k clickbait from BuzzFeed/Upworthy vs 16k non-clickbait from NYT/Guardian/Hindu).
+          </small>
+        </div>
+        <div class="dataset-info-block">
+          <strong class="d-block text-primary">Headline–Body Mismatch Benchmark</strong>
+          <small class="text-muted d-block">
+            Formulated using paired articles vs synthetically swapped bodies to evaluate bait-and-switch deception at calibrated threshold &tau;=0.100.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scientific Boundaries & Future Work -->
+  <div class="grid-2col mb-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-hand-holding-hand text-danger"></i>
+          <span>6. System Boundaries &amp; Limitations</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list text-sm">
+          <li>
+            <strong>Lexical vs Physical Reality:</strong> Statistical text classification detects stylistic and vocabulary cues. It cannot physically verify newly unfolding events without external corroboration.
+          </li>
+          <li>
+            <strong>Sensationalism &ne; Falsity:</strong> Sensational headlines are frequent in entertainment journalism and sports without being factually false.
+          </li>
+          <li>
+            <strong>Temporal Drift:</strong> Models trained on specific news cycles (e.g. 2016) reflect contemporary political discourse and require periodic retraining.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-rocket text-primary"></i>
+          <span>7. Future Enhancements</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="styled-list text-sm">
+          <li>
+            <strong>Transformer Fine-Tuning:</strong> Fine-tune RoBERTa or DeBERTa models for cross-encoder Natural Language Inference (NLI) stance detection.
+          </li>
+          <li>
+            <strong>Multi-Modal Forensics:</strong> Evaluate reverse image search and image-text consistency to detect deepfakes and repurposed imagery.
+          </li>
+          <li>
+            <strong>Knowledge Graph Grounding:</strong> Query structured knowledge graphs (Wikidata, DBpedia) for automated triple verification.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Academic Research References -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-book-bookmark text-primary"></i>
+        <span>8. Research References &amp; Academic Literature</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <ol class="references-list text-sm">
+        <li>
+          <strong>Chakraborty, A., Paranjape, B., Kakarla, S., &amp; Ganguly, N. (2016).</strong>
+          <em>Stop Clickbait: Detecting and Preventing Clickbaits in Online News Media.</em>
+          Proceedings of the 2016 IEEE/ACM International Conference on Advances in Social Networks Analysis and Mining (ASONAM), pp. 9–16.
+        </li>
+        <li>
+          <strong>Shu, K., Sliva, A., Wang, S., Tang, J., &amp; Liu, H. (2017).</strong>
+          <em>Fake News Detection on Social Media: A Data Mining Perspective.</em>
+          ACM SIGKDD Explorations Newsletter, 19(1), 22–36.
+        </li>
+        <li>
+          <strong>Wang, W. Y. (2017).</strong>
+          <em>"Liar, Liar Pants on Fire": A New Benchmark Dataset for Fake News Detection.</em>
+          Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (ACL), pp. 422–426.
+        </li>
+        <li>
+          <strong>Ferreira, W., &amp; Vlachos, A. (2016).</strong>
+          <em>Emergent: A Novel Dataset for Stance Classification.</em>
+          Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics (NAACL), pp. 1163–1168.
+        </li>
+        <li>
+          <strong>Hamel, L., &amp; McIntire, G. (2017).</strong>
+          <em>Fake News Dataset &amp; Analysis.</em>
+          University of Rhode Island Department of Computer Science and Statistics.
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>
+{% endblock %}

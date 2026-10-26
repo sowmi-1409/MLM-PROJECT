@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}NewsGuard — Model Evaluation & Performance Metrics{% endblock %}
+{% block page_title %}Model Performance & Benchmark Evaluation{% endblock %}
+
+{% block content %}
+<div class="performance-container">
+  <!-- Academic Integrity Notice Banner -->
+  <div class="card eval-banner-card mb-4">
+    <div class="eval-banner-content">
+      <div class="badge badge-success mb-2">
+        <i class="fa-solid fa-certificate"></i> Verified MLM Held-Out Test Evaluation
+      </div>
+      <h2 class="eval-banner-heading">Rigorous Machine Learning Performance & Model Comparisons</h2>
+      <p class="eval-banner-subtext">
+        All metrics displayed below are computed exclusively from strictly held-out test partitions (20% stratified test split, random seed 42)
+        on benchmark academic datasets. Each classification task is independently evaluated to prevent data leakage and cross-task conflation.
+      </p>
+      <div class="eval-meta-badges">
+        <span class="meta-tag"><i class="fa-solid fa-calendar-check"></i> Evaluated: {{ eval_data.metadata.evaluated_at if eval_data.metadata else 'Unavailable' }}</span>
+        <span class="meta-tag"><i class="fa-solid fa-code-fork"></i> Partition: {{ eval_data.metadata.split_ratio if eval_data.metadata else '80/20 Stratified' }}</span>
+        <span class="meta-tag"><i class="fa-solid fa-dice"></i> Random Seed: {{ eval_data.metadata.random_seed if eval_data.metadata else '42' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: FAKE NEWS CLASSIFICATION -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-newspaper"></i>
+        <span>Module 1: Fake News Classification (Linguistic Veracity)</span>
+      </div>
+      <div class="card-badges">
+        <span class="badge badge-info">Benchmark: George McIntire / Lutz Hamel (6,295 articles)</span>
+        <span class="badge badge-success">Selected: {{ eval_data.fake_news_task.best_model if eval_data.fake_news_task else 'Not Trained' }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Dataset Stats & Split Details -->
+      <div class="eval-dataset-strip mb-4">
+        <div class="dataset-chip">
+          <span class="d-label">Total Cleaned Articles:</span>
+          <span class="d-val">{{ eval_data.fake_news_task.total_samples if eval_data.fake_news_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Training Set (80%):</span>
+          <span class="d-val">{{ eval_data.fake_news_task.train_samples if eval_data.fake_news_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Held-Out Test Set (20%):</span>
+          <span class="d-val">{{ eval_data.fake_news_task.test_samples if eval_data.fake_news_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Class Distribution:</span>
+          <span class="d-val">
+            {% if eval_data.fake_news_task %}
+              REAL: {{ eval_data.fake_news_task.class_distribution.REAL }} | FAKE: {{ eval_data.fake_news_task.class_distribution.FAKE }}
+            {% else %}
+              N/A
+            {% endif %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Comparative Table of Algorithms -->
+      <h4 class="section-subheading mb-3"><i class="fa-solid fa-table-columns"></i> Algorithm Comparison (Held-Out Test Predictions)</h4>
+      <div class="table-responsive mb-4">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Test Accuracy</th>
+              <th>Macro Precision</th>
+              <th>Macro Recall</th>
+              <th>Macro F1-Score</th>
+              <th>Weighted F1-Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if eval_data.fake_news_task and eval_data.fake_news_task.models_comparison %}
+              {% for model_name, m in eval_data.fake_news_task.models_comparison.items() %}
+              <tr class="{% if model_name == eval_data.fake_news_task.best_model %}row-highlight{% endif %}">
+                <td>
+                  <strong>{{ model_name }}</strong>
+                  {% if model_name == eval_data.fake_news_task.best_model %}
+                    <span class="badge badge-success ms-2">Optimal Model</span>
+                  {% endif %}
+                </td>
+                <td class="font-mono text-bold">{{ (m.accuracy * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.precision_macro * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.recall_macro * 100)|round(2) }}%</td>
+                <td class="font-mono text-success">{{ (m.f1_macro * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.f1_weighted * 100)|round(2) }}%</td>
+                <td><span class="badge badge-subtle">Evaluated</span></td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="7" class="text-center text-muted">Evaluation metrics unavailable. Run training pipeline.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Charts & Confusion Matrix Row -->
+      <div class="grid-2col mb-4">
+        <!-- Chart -->
+        <div class="chart-card">
+          <h5 class="chart-title">Model Metric Comparison</h5>
+          <div style="position: relative; height: 260px;">
+            <canvas id="fakeNewsModelChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <div class="cm-card">
+          <h5 class="chart-title">Confusion Matrix: {{ eval_data.fake_news_task.best_model if eval_data.fake_news_task else 'Best Model' }}</h5>
+          <p class="text-muted text-xs mb-3">Evaluated on N = {{ eval_data.fake_news_task.test_samples if eval_data.fake_news_task else '1259' }} held-out test articles.</p>
+          {% if eval_data.fake_news_task and eval_data.fake_news_task.models_comparison %}
+            {% set best_m = eval_data.fake_news_task.models_comparison[eval_data.fake_news_task.best_model] %}
+            <div class="confusion-matrix-grid">
+              <div class="cm-corner"></div>
+              <div class="cm-col-header">Predicted REAL</div>
+              <div class="cm-col-header">Predicted FAKE</div>
+
+              <div class="cm-row-header">Actual REAL</div>
+              <div class="cm-cell cm-tp">
+                <span class="cm-val">{{ best_m.confusion_matrix[0][0] }}</span>
+                <span class="cm-label">True Real</span>
+              </div>
+              <div class="cm-cell cm-fp">
+                <span class="cm-val">{{ best_m.confusion_matrix[0][1] }}</span>
+                <span class="cm-label">False Fake</span>
+              </div>
+
+              <div class="cm-row-header">Actual FAKE</div>
+              <div class="cm-cell cm-fn">
+                <span class="cm-val">{{ best_m.confusion_matrix[1][0] }}</span>
+                <span class="cm-label">False Real</span>
+              </div>
+              <div class="cm-cell cm-tp">
+                <span class="cm-val">{{ best_m.confusion_matrix[1][1] }}</span>
+                <span class="cm-label">True Fake</span>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Classification Report Table -->
+      {% if eval_data.fake_news_task and eval_data.fake_news_task.models_comparison %}
+        {% set best_rep = eval_data.fake_news_task.models_comparison[eval_data.fake_news_task.best_model].classification_report %}
+        <h5 class="section-subheading mb-2"><i class="fa-solid fa-list-check"></i> Detailed Classification Report (Per-Class Performance)</h5>
+        <div class="table-responsive">
+          <table class="data-table text-sm">
+            <thead>
+              <tr>
+                <th>Class Name</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>Support (Test Instances)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Credible / Real News</strong></td>
+                <td class="font-mono">{{ (best_rep['Credible / Real'].precision * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (best_rep['Credible / Real'].recall * 100)|round(2) }}%</td>
+                <td class="font-mono text-bold">{{ (best_rep['Credible / Real']['f1-score'] * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ best_rep['Credible / Real'].support|int }}</td>
+              </tr>
+              <tr>
+                <td><strong>Unreliable / Fake News</strong></td>
+                <td class="font-mono">{{ (best_rep['Unreliable / Fake'].precision * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (best_rep['Unreliable / Fake'].recall * 100)|round(2) }}%</td>
+                <td class="font-mono text-bold">{{ (best_rep['Unreliable / Fake']['f1-score'] * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ best_rep['Unreliable / Fake'].support|int }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- SECTION 2: CLICKBAIT DETECTION -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>Module 2: Clickbait Detection (Headline Stylometry)</span>
+      </div>
+      <div class="card-badges">
+        <span class="badge badge-info">Benchmark: Chakraborty et al. ASONAM (32,000 headlines)</span>
+        <span class="badge badge-success">Selected: {{ eval_data.clickbait_task.best_model if eval_data.clickbait_task else 'Not Trained' }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Dataset Stats Strip -->
+      <div class="eval-dataset-strip mb-4">
+        <div class="dataset-chip">
+          <span class="d-label">Total Cleaned Headlines:</span>
+          <span class="d-val">{{ eval_data.clickbait_task.total_samples if eval_data.clickbait_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Training Set (80%):</span>
+          <span class="d-val">{{ eval_data.clickbait_task.train_samples if eval_data.clickbait_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Held-Out Test Set (20%):</span>
+          <span class="d-val">{{ eval_data.clickbait_task.test_samples if eval_data.clickbait_task else 'N/A' }}</span>
+        </div>
+        <div class="dataset-chip">
+          <span class="d-label">Class Distribution:</span>
+          <span class="d-val">Clickbait: 15,999 | Non-Clickbait: 16,001 (Balanced)</span>
+        </div>
+      </div>
+
+      <!-- Comparative Table of Algorithms -->
+      <h4 class="section-subheading mb-3"><i class="fa-solid fa-table-columns"></i> Algorithm Comparison (Held-Out Test Predictions)</h4>
+      <div class="table-responsive mb-4">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Test Accuracy</th>
+              <th>Macro Precision</th>
+              <th>Macro Recall</th>
+              <th>Macro F1-Score</th>
+              <th>Weighted F1-Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if eval_data.clickbait_task and eval_data.clickbait_task.models_comparison %}
+              {% for model_name, m in eval_data.clickbait_task.models_comparison.items() %}
+              <tr class="{% if model_name == eval_data.clickbait_task.best_model %}row-highlight{% endif %}">
+                <td>
+                  <strong>{{ model_name }}</strong>
+                  {% if model_name == eval_data.clickbait_task.best_model %}
+                    <span class="badge badge-success ms-2">Optimal Model</span>
+                  {% endif %}
+                </td>
+                <td class="font-mono text-bold">{{ (m.accuracy * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.precision_macro * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.recall_macro * 100)|round(2) }}%</td>
+                <td class="font-mono text-success">{{ (m.f1_macro * 100)|round(2) }}%</td>
+                <td class="font-mono">{{ (m.f1_weighted * 100)|round(2) }}%</td>
+                <td><span class="badge badge-subtle">Evaluated</span></td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="7" class="text-center text-muted">Evaluation metrics unavailable. Run training pipeline.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Clickbait Confusion Matrix & Chart -->
+      <div class="grid-2col mb-4">
+        <div class="chart-card">
+          <h5 class="chart-title">Clickbait Model Metric Comparison</h5>
+          <div style="position: relative; height: 260px;">
+            <canvas id="clickbaitModelChart"></canvas>
+          </div>
+        </div>
+
+        <div class="cm-card">
+          <h5 class="chart-title">Confusion Matrix: {{ eval_data.clickbait_task.best_model if eval_data.clickbait_task else 'Best Model' }}</h5>
+          <p class="text-muted text-xs mb-3">Evaluated on N = {{ eval_data.clickbait_task.test_samples if eval_data.clickbait_task else '6400' }} held-out test headlines.</p>
+          {% if eval_data.clickbait_task and eval_data.clickbait_task.models_comparison %}
+            {% set cb_best_m = eval_data.clickbait_task.models_comparison[eval_data.clickbait_task.best_model] %}
+            <div class="confusion-matrix-grid">
+              <div class="cm-corner"></div>
+              <div class="cm-col-header">Predicted Non-CB</div>
+              <div class="cm-col-header">Predicted Clickbait</div>
+
+              <div class="cm-row-header">Actual Non-CB</div>
+              <div class="cm-cell cm-tp">
+                <span class="cm-val">{{ cb_best_m.confusion_matrix[0][0] }}</span>
+                <span class="cm-label">True Non-CB</span>
+              </div>
+              <div class="cm-cell cm-fp">
+                <span class="cm-val">{{ cb_best_m.confusion_matrix[0][1] }}</span>
+                <span class="cm-label">False CB</span>
+              </div>
+
+              <div class="cm-row-header">Actual Clickbait</div>
+              <div class="cm-cell cm-fn">
+                <span class="cm-val">{{ cb_best_m.confusion_matrix[1][0] }}</span>
+                <span class="cm-label">False Non-CB</span>
+              </div>
+              <div class="cm-cell cm-tp">
+                <span class="cm-val">{{ cb_best_m.confusion_matrix[1][1] }}</span>
+                <span class="cm-label">True Clickbait</span>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: HEADLINE–BODY MISMATCH DETECTOR -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-arrows-split-up-and-left"></i>
+        <span>Module 3: Headline–Body Mismatch Detection (Consistency Alignment)</span>
+      </div>
+      <div class="card-badges">
+        <span class="badge badge-info">Methodology: TF-IDF Cosine Similarity with Validated Thresholding</span>
+        <span class="badge badge-success">Decision Threshold &tau; = {{ eval_data.headline_body_mismatch_task.metrics.calibrated_threshold if eval_data.headline_body_mismatch_task else '0.100' }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="text-muted text-sm mb-4">
+        Unlike classification tasks with predefined ground-truth labels, mismatch detection was formulated as an alignment discrimination problem.
+        The system measures TF-IDF N-gram cosine similarity between headlines and article bodies.
+        A decision threshold was tuned on a validation set to maximize discrimination between matched pairs and synthetically shuffled pairs.
+      </p>
+
+      {% if eval_data.headline_body_mismatch_task %}
+        {% set mm_m = eval_data.headline_body_mismatch_task.metrics %}
+        <div class="stats-grid mb-4">
+          <div class="stat-card">
+            <span class="stat-label">Optimal Decision Threshold (&tau;)</span>
+            <span class="stat-number font-mono text-primary">{{ mm_m.calibrated_threshold }}</span>
+            <span class="stat-caption">Calibrated on validation split</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Test Discrimination Accuracy</span>
+            <span class="stat-number font-mono text-success">{{ (mm_m.test_accuracy * 100)|round(2) }}%</span>
+            <span class="stat-caption">On held-out test pairs</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Test Macro F1-Score</span>
+            <span class="stat-number font-mono text-success">{{ (mm_m.test_f1 * 100)|round(2) }}%</span>
+            <span class="stat-caption">Balanced consistency measure</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Mean Matched Similarity</span>
+            <span class="stat-number font-mono text-info">{{ mm_m.mean_matched_similarity }}</span>
+            <span class="stat-caption">vs Mismatched: {{ mm_m.mean_mismatched_similarity }}</span>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>
+            <strong>Scientific Boundary:</strong> Lexical overlap measures topical proximity.
+            A low similarity score indicates a stylistic or topical gap, not necessarily factual falsity.
+          </span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Pass real model comparison numbers to Chart.js
+    const evalData = {{ eval_data|tojson }};
+    initPerformanceCharts(evalData);
+  });
+</script>
+{% endblock %}

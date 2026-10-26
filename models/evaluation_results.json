@@ -1,0 +1,570 @@
+{
+  "metadata": {
+    "project_name": "NewsGuard: Explainable Fake News, Clickbait & Headline-Body Mismatch Detection",
+    "evaluated_at": "2026-10-26 16:36:06Z",
+    "random_seed": 42,
+    "split_ratio": "80% Train, 20% Held-Out Test (Stratified)"
+  },
+  "fake_news_task": {
+    "dataset_name": "Fake or Real News Dataset (George McIntire / Lutz Hamel)",
+    "dataset_url": "https://github.com/lutzhamel/fake-news",
+    "total_samples": 6295,
+    "train_samples": 5036,
+    "test_samples": 1259,
+    "class_distribution": {
+      "REAL": 3171,
+      "FAKE": 3124
+    },
+    "best_model": "Support Vector Machine (SGD)",
+    "models_comparison": {
+      "Logistic Regression": {
+        "accuracy": 0.9373,
+        "precision_macro": 0.9375,
+        "recall_macro": 0.9373,
+        "f1_macro": 0.9372,
+        "precision_weighted": 0.9376,
+        "recall_weighted": 0.9373,
+        "f1_weighted": 0.9372,
+        "confusion_matrix": [
+          [
+            586,
+            48
+          ],
+          [
+            31,
+            594
+          ]
+        ],
+        "classification_report": {
+          "Credible / Real": {
+            "precision": 0.9497568881685575,
+            "recall": 0.9242902208201893,
+            "f1-score": 0.9368505195843325,
+            "support": 634.0
+          },
+          "Unreliable / Fake": {
+            "precision": 0.9252336448598131,
+            "recall": 0.9504,
+            "f1-score": 0.9376479873717443,
+            "support": 625.0
+          },
+          "accuracy": 0.937251787132645,
+          "macro avg": {
+            "precision": 0.9374952665141854,
+            "recall": 0.9373451104100947,
+            "f1-score": 0.9372492534780383,
+            "support": 1259.0
+          },
+          "weighted avg": {
+            "precision": 0.9375829190915397,
+            "recall": 0.937251787132645,
+            "f1-score": 0.9372464031166059,
+            "support": 1259.0
+          }
+        }
+      },
+      "Multinomial Naive Bayes": {
+        "accuracy": 0.9102,
+        "precision_macro": 0.9114,
+        "recall_macro": 0.9104,
+        "f1_macro": 0.9102,
+        "precision_weighted": 0.9116,
+        "recall_weighted": 0.9102,
+        "f1_weighted": 0.9102,
+        "confusion_matrix": [
+          [
+            560,
+            74
+          ],
+          [
+            39,
+            586
+          ]
+        ],
+        "classification_report": {
+          "Credible / Real": {
+            "precision": 0.9348914858096828,
+            "recall": 0.8832807570977917,
+            "f1-score": 0.9083536090835361,
+            "support": 634.0
+          },
+          "Unreliable / Fake": {
+            "precision": 0.8878787878787879,
+            "recall": 0.9376,
+            "f1-score": 0.9120622568093385,
+            "support": 625.0
+          },
+          "accuracy": 0.9102462271644162,
+          "macro avg": {
+            "precision": 0.9113851368442354,
+            "recall": 0.9104403785488959,
+            "f1-score": 0.9102079329464373,
+            "support": 1259.0
+          },
+          "weighted avg": {
+            "precision": 0.911553172698635,
+            "recall": 0.9102462271644162,
+            "f1-score": 0.9101946772555984,
+            "support": 1259.0
+          }
+        }
+      },
+      "Support Vector Machine (SGD)": {
+        "accuracy": 0.938,
+        "precision_macro": 0.9383,
+        "recall_macro": 0.9381,
+        "f1_macro": 0.938,
+        "precision_weighted": 0.9384,
+        "recall_weighted": 0.938,
+        "f1_weighted": 0.938,
+        "confusion_matrix": [
+          [
+            586,
+            48
+          ],
+          [
+            30,
+            595
+          ]
+        ],
+        "classification_report": {
+          "Credible / Real": {
+            "precision": 0.9512987012987013,
+            "recall": 0.9242902208201893,
+            "f1-score": 0.9376,
+            "support": 634.0
+          },
+          "Unreliable / Fake": {
+            "precision": 0.9253499222395023,
+            "recall": 0.952,
+            "f1-score": 0.9384858044164038,
+            "support": 625.0
+          },
+          "accuracy": 0.938046068308181,
+          "macro avg": {
+            "precision": 0.9383243117691018,
+            "recall": 0.9381451104100946,
+            "f1-score": 0.938042902208202,
+            "support": 1259.0
+          },
+          "weighted avg": {
+            "precision": 0.9384170595894087,
+            "recall": 0.938046068308181,
+            "f1-score": 0.9380397361082227,
+            "support": 1259.0
+          }
+        }
+      }
+    },
+    "top_features": {
+      "class_1_indicators": [
+        {
+          "feature": "2016",
+          "weight": 6.076
+        },
+        {
+          "feature": "october",
+          "weight": 5.033
+        },
+        {
+          "feature": "article",
+          "weight": 3.568
+        },
+        {
+          "feature": "november",
+          "weight": 3.507
+        },
+        {
+          "feature": "hillary",
+          "weight": 3.504
+        },
+        {
+          "feature": "november 2016",
+          "weight": 3.335
+        },
+        {
+          "feature": "share",
+          "weight": 3.193
+        },
+        {
+          "feature": "source",
+          "weight": 2.863
+        },
+        {
+          "feature": "election",
+          "weight": 2.86
+        },
+        {
+          "feature": "email",
+          "weight": 2.663
+        },
+        {
+          "feature": "print",
+          "weight": 2.555
+        },
+        {
+          "feature": "russia",
+          "weight": 2.461
+        },
+        {
+          "feature": "com",
+          "weight": 2.381
+        },
+        {
+          "feature": "wikileaks",
+          "weight": 2.361
+        },
+        {
+          "feature": "mosul",
+          "weight": 2.341
+        },
+        {
+          "feature": "advertisement",
+          "weight": 2.284
+        },
+        {
+          "feature": "oct",
+          "weight": 2.203
+        },
+        {
+          "feature": "breaking",
+          "weight": 2.156
+        },
+        {
+          "feature": "uk",
+          "weight": 2.111
+        },
+        {
+          "feature": "voting",
+          "weight": 2.036
+        },
+        {
+          "feature": "hillary clinton",
+          "weight": 2.017
+        },
+        {
+          "feature": "podesta",
+          "weight": 1.997
+        },
+        {
+          "feature": "photo",
+          "weight": 1.987
+        },
+        {
+          "feature": "28",
+          "weight": 1.906
+        },
+        {
+          "feature": "stated",
+          "weight": 1.731
+        }
+      ],
+      "class_0_indicators": [
+        {
+          "feature": "said",
+          "weight": -4.313
+        },
+        {
+          "feature": "gop",
+          "weight": -3.362
+        },
+        {
+          "feature": "obama",
+          "weight": -2.871
+        },
+        {
+          "feature": "candidates",
+          "weight": -2.804
+        },
+        {
+          "feature": "president",
+          "weight": -2.665
+        },
+        {
+          "feature": "cruz",
+          "weight": -2.616
+        },
+        {
+          "feature": "conservative",
+          "weight": -2.613
+        },
+        {
+          "feature": "sanders",
+          "weight": -2.502
+        },
+        {
+          "feature": "monday",
+          "weight": -2.437
+        },
+        {
+          "feature": "republicans",
+          "weight": -2.385
+        },
+        {
+          "feature": "fox news",
+          "weight": -2.372
+        },
+        {
+          "feature": "fox",
+          "weight": -2.368
+        },
+        {
+          "feature": "tuesday",
+          "weight": -2.338
+        },
+        {
+          "feature": "campaign",
+          "weight": -2.265
+        },
+        {
+          "feature": "debate",
+          "weight": -2.215
+        },
+        {
+          "feature": "convention",
+          "weight": -2.18
+        },
+        {
+          "feature": "sunday",
+          "weight": -2.165
+        },
+        {
+          "feature": "islamic state",
+          "weight": -2.162
+        },
+        {
+          "feature": "friday",
+          "weight": -2.109
+        },
+        {
+          "feature": "percent",
+          "weight": -2.101
+        },
+        {
+          "feature": "sen",
+          "weight": -2.077
+        },
+        {
+          "feature": "state",
+          "weight": -2.035
+        },
+        {
+          "feature": "says",
+          "weight": -2.028
+        },
+        {
+          "feature": "nomination",
+          "weight": -2.028
+        },
+        {
+          "feature": "republican",
+          "weight": -2.012
+        }
+      ]
+    }
+  },
+  "clickbait_task": {
+    "dataset_name": "Chakraborty et al. Stop Clickbait Dataset (ASONAM 2016)",
+    "dataset_url": "https://github.com/bhargaviparanjape/clickbait",
+    "citation": "Chakraborty et al., Stop Clickbait: Detecting and Preventing Clickbaits in Online News Media, IEEE/ACM ASONAM 2016",
+    "total_samples": 32000,
+    "train_samples": 25600,
+    "test_samples": 6400,
+    "class_distribution": {
+      "Non-Clickbait": 16001,
+      "Clickbait": 15999
+    },
+    "best_model": "Multinomial Naive Bayes",
+    "models_comparison": {
+      "Logistic Regression": {
+        "accuracy": 0.9563,
+        "precision_macro": 0.9564,
+        "recall_macro": 0.9563,
+        "f1_macro": 0.9562,
+        "precision_weighted": 0.9564,
+        "recall_weighted": 0.9563,
+        "f1_weighted": 0.9562,
+        "confusion_matrix": [
+          [
+            3092,
+            108
+          ],
+          [
+            172,
+            3028
+          ]
+        ],
+        "classification_report": {
+          "Non-Clickbait": {
+            "precision": 0.9473039215686274,
+            "recall": 0.96625,
+            "f1-score": 0.9566831683168316,
+            "support": 3200.0
+          },
+          "Clickbait": {
+            "precision": 0.9655612244897959,
+            "recall": 0.94625,
+            "f1-score": 0.9558080808080808,
+            "support": 3200.0
+          },
+          "accuracy": 0.95625,
+          "macro avg": {
+            "precision": 0.9564325730292116,
+            "recall": 0.95625,
+            "f1-score": 0.9562456245624562,
+            "support": 6400.0
+          },
+          "weighted avg": {
+            "precision": 0.9564325730292117,
+            "recall": 0.95625,
+            "f1-score": 0.9562456245624563,
+            "support": 6400.0
+          }
+        }
+      },
+      "Multinomial Naive Bayes": {
+        "accuracy": 0.9605,
+        "precision_macro": 0.9605,
+        "recall_macro": 0.9605,
+        "f1_macro": 0.9605,
+        "precision_weighted": 0.9605,
+        "recall_weighted": 0.9605,
+        "f1_weighted": 0.9605,
+        "confusion_matrix": [
+          [
+            3083,
+            117
+          ],
+          [
+            136,
+            3064
+          ]
+        ],
+        "classification_report": {
+          "Non-Clickbait": {
+            "precision": 0.9577508543025784,
+            "recall": 0.9634375,
+            "f1-score": 0.960585761021966,
+            "support": 3200.0
+          },
+          "Clickbait": {
+            "precision": 0.963219113486325,
+            "recall": 0.9575,
+            "f1-score": 0.9603510421564018,
+            "support": 3200.0
+          },
+          "accuracy": 0.96046875,
+          "macro avg": {
+            "precision": 0.9604849838944518,
+            "recall": 0.96046875,
+            "f1-score": 0.9604684015891839,
+            "support": 6400.0
+          },
+          "weighted avg": {
+            "precision": 0.9604849838944517,
+            "recall": 0.96046875,
+            "f1-score": 0.9604684015891839,
+            "support": 6400.0
+          }
+        }
+      },
+      "Support Vector Machine (SGD)": {
+        "accuracy": 0.9478,
+        "precision_macro": 0.9485,
+        "recall_macro": 0.9478,
+        "f1_macro": 0.9478,
+        "precision_weighted": 0.9485,
+        "recall_weighted": 0.9478,
+        "f1_weighted": 0.9478,
+        "confusion_matrix": [
+          [
+            3095,
+            105
+          ],
+          [
+            229,
+            2971
+          ]
+        ],
+        "classification_report": {
+          "Non-Clickbait": {
+            "precision": 0.931107099879663,
+            "recall": 0.9671875,
+            "f1-score": 0.9488044144696505,
+            "support": 3200.0
+          },
+          "Clickbait": {
+            "precision": 0.9658647594278283,
+            "recall": 0.9284375,
+            "f1-score": 0.9467813894200128,
+            "support": 3200.0
+          },
+          "accuracy": 0.9478125,
+          "macro avg": {
+            "precision": 0.9484859296537457,
+            "recall": 0.9478125,
+            "f1-score": 0.9477929019448317,
+            "support": 6400.0
+          },
+          "weighted avg": {
+            "precision": 0.9484859296537457,
+            "recall": 0.9478125,
+            "f1-score": 0.9477929019448317,
+            "support": 6400.0
+          }
+        }
+      }
+    },
+    "top_features": {}
+  },
+  "headline_body_mismatch_task": {
+    "methodology": "TF-IDF N-gram Vectorization with Cosine Similarity & Validated Thresholding",
+    "metrics": {
+      "calibrated_threshold": 0.1,
+      "mean_matched_similarity": 0.2604,
+      "mean_mismatched_similarity": 0.0173,
+      "test_accuracy": 0.9058,
+      "test_precision": 0.9116,
+      "test_recall": 0.9058,
+      "test_f1": 0.9055,
+      "confusion_matrix": [
+        [
+          579,
+          21
+        ],
+        [
+          92,
+          508
+        ]
+      ],
+      "classification_report": {
+        "Mismatched": {
+          "precision": 0.8628912071535022,
+          "recall": 0.965,
+          "f1-score": 0.911093627065303,
+          "support": 600.0
+        },
+        "Consistent": {
+          "precision": 0.9603024574669187,
+          "recall": 0.8466666666666667,
+          "f1-score": 0.899911426040744,
+          "support": 600.0
+        },
+        "accuracy": 0.9058333333333334,
+        "macro avg": {
+          "precision": 0.9115968323102104,
+          "recall": 0.9058333333333333,
+          "f1-score": 0.9055025265530234,
+          "support": 1200.0
+        },
+        "weighted avg": {
+          "precision": 0.9115968323102105,
+          "recall": 0.9058333333333334,
+          "f1-score": 0.9055025265530234,
+          "support": 1200.0
+        }
+      },
+      "test_samples_total": 1200
+    }
+  }
+}

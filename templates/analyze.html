@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}NewsGuard — News Forensics & Analysis{% endblock %}
+{% block page_title %}News Analysis{% endblock %}
+
+{% block content %}
+<div class="analysis-container">
+  <!-- Top Demo Bar -->
+  <div class="preset-card card mb-4">
+    <div class="preset-header">
+      <div class="preset-title">
+        <i class="fa-solid fa-flask-vial"></i>
+        <span>Evaluation Presets (Pre-Curated Representative Cases)</span>
+      </div>
+      <span class="text-muted text-sm">Select a benchmark scenario to pre-fill the form:</span>
+    </div>
+    <div class="preset-chips">
+      {% for s in samples %}
+      <button class="preset-chip" onclick="loadSample('{{ s.id }}')" title="{{ s.expected }}">
+        <span class="chip-category">{{ s.category }}</span>
+        <span class="chip-name">{{ s.title }}</span>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Input Form & Controls -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Article Content Input</span>
+      </div>
+      <div class="card-badges">
+        <span class="badge badge-info"><i class="fa-solid fa-shield-virus"></i> Real-Time Processing</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Optional URL Fetcher Bar -->
+      <div class="url-fetch-bar mb-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-link"></i></span>
+          <input type="url" id="article-url" class="form-control" placeholder="Optional: Paste live news article URL to scrape content...">
+          <button class="btn btn-secondary" type="button" id="btn-fetch-url">
+            <span class="btn-text"><i class="fa-solid fa-cloud-arrow-down"></i> Fetch Article</span>
+            <span class="spinner-border spinner-border-sm d-none" id="fetch-spinner"></span>
+          </button>
+        </div>
+        <small class="text-muted mt-1 d-block">
+          Extracts public article headline and main paragraph text using automated web parsing.
+        </small>
+      </div>
+
+      <form id="analysis-form">
+        <!-- Headline Input -->
+        <div class="form-group mb-3">
+          <div class="label-row">
+            <label for="headline" class="form-label">
+              <strong>News Article Headline</strong> <span class="text-danger">*</span>
+            </label>
+            <span class="char-count text-muted text-xs" id="headline-count">0 / 500 chars</span>
+          </div>
+          <input
+            type="text"
+            id="headline"
+            class="form-control form-control-lg"
+            placeholder="e.g. NASA James Webb Telescope Uncovers Atmospheric Signals on Exoplanet..."
+            required
+            maxlength="500"
+          >
+        </div>
+
+        <!-- Article Body Input -->
+        <div class="form-group mb-3">
+          <div class="label-row">
+            <label for="body-text" class="form-label">
+              <strong>Article Body Text</strong> <span class="text-muted">(Required for headline-body consistency analysis)</span>
+            </label>
+            <span class="word-count text-muted text-xs" id="body-count">0 words</span>
+          </div>
+          <textarea
+            id="body-text"
+            class="form-control font-body"
+            rows="6"
+            placeholder="Paste full article body paragraphs here for semantic overlap and contextual consistency analysis..."
+          ></textarea>
+        </div>
+
+        <!-- Validation Alert Box -->
+        <div class="alert alert-danger d-none" id="validation-error">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span id="validation-error-text">Please resolve the input error above.</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-lg" id="btn-analyze">
+            <span class="btn-text"><i class="fa-solid fa-magnifying-glass-chart"></i> Analyse News Article</span>
+            <span class="btn-spinner d-none" id="analyze-spinner">
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Processing Model Pipelines...
+            </span>
+          </button>
+          <button type="button" class="btn btn-outline" id="btn-clear">
+            <i class="fa-solid fa-rotate-left"></i> Clear All
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading State Indicator -->
+  <div class="card loading-card d-none mb-4" id="loading-state">
+    <div class="card-body text-center py-5">
+      <div class="analysis-spinner-wrap">
+        <div class="radar-spinner"></div>
+      </div>
+      <h3 class="loading-title mt-3">Executing Explainable Forensics Pipelines</h3>
+      <p class="loading-desc text-muted">
+        Evaluating lexical feature weights, clickbait rhetorical stylometry, TF-IDF cosine similarity, and encyclopedic cross-references...
+      </p>
+      <div class="loading-pipeline-steps">
+        <span class="pipeline-step active"><i class="fa-solid fa-check"></i> TF-IDF Vectorization</span>
+        <span class="pipeline-step active"><i class="fa-solid fa-check"></i> Linear Classifier Inference</span>
+        <span class="pipeline-step active"><i class="fa-solid fa-check"></i> Cosine Similarity Gauge</span>
+        <span class="pipeline-step active"><i class="fa-solid fa-check"></i> Explainability Synthesis</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-container d-none" id="results-section">
+    <!-- Synthesis & Overall Verdict Banner -->
+    <div class="synthesis-card card mb-4" id="synthesis-banner">
+      <div class="card-body">
+        <div class="synthesis-header">
+          <div class="synthesis-badge-wrap">
+            <span class="synthesis-badge" id="synthesis-badge">Assessment Pending</span>
+          </div>
+          <div class="synthesis-summary-text">
+            <h2 class="synthesis-title" id="synthesis-title">Multi-Dimensional Forensics Assessment</h2>
+            <p class="synthesis-desc" id="synthesis-desc"></p>
+          </div>
+        </div>
+
+        <div class="synthesis-signals-grid mt-3">
+          <div class="signals-column">
+            <h4 class="signals-header text-danger"><i class="fa-solid fa-shield-cat"></i> Forensics Risk Flags</h4>
+            <div id="risk-flags-list" class="signals-list">
+              <span class="text-muted text-sm">No risk flags detected.</span>
+            </div>
+          </div>
+          <div class="signals-column">
+            <h4 class="signals-header text-success"><i class="fa-solid fa-circle-check"></i> Credibility Signals</h4>
+            <div id="positive-signals-list" class="signals-list">
+              <span class="text-muted text-sm">No corroborating signals available.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-warning mt-3">
+          <i class="fa-solid fa-scale-balanced"></i>
+          <span id="ethical-ai-notice"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Forensic Analysis Cards Grid -->
+    <div class="forensics-cards-grid">
+      <!-- 1. Fake News Classification -->
+      <div class="card forensic-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-newspaper"></i>
+            <span>1. Veracity Linguistic Classification</span>
+          </div>
+          <span class="badge" id="fn-badge">Pending</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-score-row">
+            <div class="metric-score-block">
+              <span class="metric-label">Predicted Class</span>
+              <span class="metric-value" id="fn-label">--</span>
+            </div>
+            <div class="metric-score-block">
+              <span class="metric-label">Model Confidence</span>
+              <span class="metric-value text-primary" id="fn-confidence">--%</span>
+            </div>
+          </div>
+
+          <!-- Probability Bar -->
+          <div class="prob-bar-wrap mt-3">
+            <div class="prob-bar-label">
+              <span>Credible Journalism (<span id="fn-prob-real">50%</span>)</span>
+              <span>Disinformation (<span id="fn-prob-fake">50%</span>)</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-success" id="fn-bar-real" style="width: 50%"></div>
+              <div class="progress-bar bg-danger" id="fn-bar-fake" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <div class="analysis-explanation mt-3">
+            <strong>Model Finding:</strong>
+            <p id="fn-explanation" class="text-muted text-sm mb-2"></p>
+            <strong>Influential Vocabulary Tokens (Local Attribution):</strong>
+            <div class="feature-tags mt-1" id="fn-influential-tokens"></div>
+          </div>
+
+          <div class="forensic-limitation mt-3">
+            <small class="text-muted"><i class="fa-solid fa-circle-exclamation"></i> <span id="fn-limitations"></span></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Clickbait Detection -->
+      <div class="card forensic-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>2. Clickbait & Stylometry Analysis</span>
+          </div>
+          <span class="badge" id="cb-badge">Pending</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-score-row">
+            <div class="metric-score-block">
+              <span class="metric-label">Headline Style</span>
+              <span class="metric-value" id="cb-label">--</span>
+            </div>
+            <div class="metric-score-block">
+              <span class="metric-label">Stylometric Confidence</span>
+              <span class="metric-value text-primary" id="cb-confidence">--%</span>
+            </div>
+          </div>
+
+          <!-- Stylistic Patterns Detected -->
+          <div class="stylistic-cues-wrap mt-3">
+            <span class="metric-label d-block mb-1">Rhetorical Clickbait Tropes Detected:</span>
+            <div id="cb-cues" class="cue-chips">
+              <span class="badge badge-neutral">None detected</span>
+            </div>
+          </div>
+
+          <div class="analysis-explanation mt-3">
+            <strong>Stylometric Finding:</strong>
+            <p id="cb-explanation" class="text-muted text-sm mb-2"></p>
+            <strong>Influential Headline Features:</strong>
+            <div class="feature-tags mt-1" id="cb-influential-tokens"></div>
+          </div>
+
+          <div class="forensic-limitation mt-3">
+            <small class="text-muted"><i class="fa-solid fa-circle-exclamation"></i> <span id="cb-limitations"></span></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Headline–Body Consistency -->
+      <div class="card forensic-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i>
+            <span>3. Headline–Body Consistency</span>
+          </div>
+          <span class="badge" id="mm-badge">Pending</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-score-row">
+            <div class="metric-score-block">
+              <span class="metric-label">Consistency Diagnosis</span>
+              <span class="metric-value" id="mm-label">--</span>
+            </div>
+            <div class="metric-score-block">
+              <span class="metric-label">TF-IDF Cosine Similarity</span>
+              <span class="metric-value font-mono text-primary" id="mm-score">0.000</span>
+            </div>
+          </div>
+
+          <!-- Cosine Similarity vs Threshold Bar -->
+          <div class="threshold-gauge mt-3">
+            <div class="threshold-markers">
+              <span>Similarity: <strong id="mm-score-text">0.000</strong></span>
+              <span class="text-info">Calibrated Decision Threshold: <strong id="mm-threshold-val">0.100</strong></span>
+            </div>
+            <div class="progress gauge-progress">
+              <div class="progress-bar" id="mm-progress-bar" style="width: 10%"></div>
+            </div>
+          </div>
+
+          <div class="analysis-explanation mt-3">
+            <strong>Consistency Finding:</strong>
+            <p id="mm-explanation" class="text-muted text-sm mb-2"></p>
+            
+            <div class="keyword-overlap-section">
+              <div class="shared-keywords-block">
+                <span class="metric-label text-success"><i class="fa-solid fa-link"></i> Grounded Shared Terms:</span>
+                <div class="feature-tags mt-1" id="mm-shared-terms"></div>
+              </div>
+              <div class="missing-keywords-block mt-2">
+                <span class="metric-label text-warning"><i class="fa-solid fa-link-slash"></i> Unmatched Headline Claims:</span>
+                <div class="feature-tags mt-1" id="mm-missing-terms"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="forensic-limitation mt-3">
+            <small class="text-muted"><i class="fa-solid fa-circle-exclamation"></i> <span id="mm-limitations"></span></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. External Verification -->
+      <div class="card forensic-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-globe"></i>
+            <span>4. External Reference & Entity Grounding</span>
+          </div>
+          <span class="badge" id="ev-badge">Pending</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-score-row">
+            <div class="metric-score-block">
+              <span class="metric-label">Corroboration Status</span>
+              <span class="metric-value" id="ev-verdict">--</span>
+            </div>
+            <div class="metric-score-block">
+              <span class="metric-label">Query Entities</span>
+              <span class="metric-value font-mono text-sm text-primary" id="ev-query">--</span>
+            </div>
+          </div>
+
+          <div class="analysis-explanation mt-3">
+            <strong>Retrieval Finding:</strong>
+            <p id="ev-explanation" class="text-muted text-sm mb-2"></p>
+            
+            <div class="external-sources-block mt-2">
+              <span class="metric-label d-block mb-1">Public References Retrieved:</span>
+              <div id="ev-sources-list" class="source-items-list">
+                <span class="text-muted text-xs">No external sources queried yet.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="forensic-limitation mt-3">
+            <small class="text-muted"><i class="fa-solid fa-circle-exclamation"></i> <span id="ev-limitations"></span></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}NewsGuard — Explainable News Analysis System{% endblock %}</title>
+  <meta name="description" content="Explainable Fake News, Clickbait and Headline–Body Mismatch Detection using Machine Learning.">
+  
+  <!-- Modern Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">NewsGuard</span>
+          <span class="brand-subtitle">Explainable AI System</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-label">Navigation</div>
+        <a href="{{ url_for('index') }}" class="nav-item {% if active_page == 'index' %}active{% endif %}">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('analyze') }}" class="nav-item {% if active_page == 'analyze' %}active{% endif %}">
+          <i class="fa-solid fa-newspaper"></i>
+          <span>News Analysis</span>
+        </a>
+        <a href="{{ url_for('performance') }}" class="nav-item {% if active_page == 'performance' %}active{% endif %}">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Model Performance</span>
+        </a>
+        <a href="{{ url_for('about') }}" class="nav-item {% if active_page == 'about' %}active{% endif %}">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>About Project</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-system-box">
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span class="status-text">ML Models Loaded</span>
+        </div>
+        <div class="system-meta">
+          <span>SVM &bull; MNB &bull; TF-IDF</span>
+          <span id="session-count-badge">Analyzed: {{ stats.total_analyzed if stats else 0 }}</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="theme-toggle" id="theme-toggle" title="Toggle Light / Dark Mode">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+          <span id="theme-text">Dark Mode</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Header Navigation -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="page-title-crumb">
+            <span class="text-muted">NewsGuard / </span>
+            <span class="crumb-current">{% block page_title %}Dashboard{% endblock %}</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Analyze Article</span>
+          </a>
+          <button class="btn btn-ghost btn-sm" id="header-theme-toggle" title="Toggle Theme">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <main class="page-content">
+        {% block content %}{% endblock %}
+      </main>
+
+      <!-- Global Editorial Footer -->
+      <footer class="app-footer">
+        <div class="footer-left">
+          <strong>NewsGuard:</strong> Explainable Fake News, Clickbait & Headline–Body Mismatch Detection Using Machine Learning.
+        </div>
+        <div class="footer-right">
+          <span>Academic Machine Learning Laboratory Project</span>
+          <span class="sep">&bull;</span>
+          <a href="{{ url_for('about') }}">Documentation & References</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Main Application Script -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large Raw Datasets (automatically downloaded by train_models.py)
+data/raw/*.csv
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE / Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Metadata
+.DS_Store
+Thumbs.db
